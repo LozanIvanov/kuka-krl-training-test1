@@ -1,0 +1,57 @@
+&ACCESS RVO1
+&COMMENT Modul (src/dat) with INI line and PTP HOME at start and end of Program
+DEF Test1 ( )
+;FOLD INI
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+;FOLD PTP HOME  Vel= 100 % DEFAULT;%{PE}%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME, 3:, 5:100, 7:DEFAULT
+$BWDSTART = FALSE
+PDAT_ACT=PDEFAULT
+FDAT_ACT=FHOME
+BAS (#PTP_PARAMS,100 )
+$H_POS=XHOME
+PTP  XHOME
+;ENDFOLD
+ 
+ 
+ IF mode == 1 THEN   ;IF NOT mode == 1 THEN can do it this way as well
+   LIN P_A
+ ELSEIF mode == 2  THEN
+   LIN P_C 
+ ELSE
+   LIN P_B   
+ ENDIF   
+ 
+   mode=2 ;change the mode during the program  
+ IF mode == 2 THEN
+   LIN P_C
+ ELSE
+   LIN P_B
+ ENDIF
+  
+  mode=1
+  
+ WHILE mode<4
+   LIN P_A
+   mode=mode + 1 
+ ENDWHILE  
+ 
+ FOR i=1 TO 3
+ LIN P_D
+ ENDFOR
+ 
+LIN P_A
+LIN P_B
+LIN P_C
+LIN P_D
+PTP XHOME
+END
